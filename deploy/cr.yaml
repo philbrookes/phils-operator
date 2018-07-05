@@ -1,0 +1,4 @@
+apiVersion: "app.phil.com/v1alpha1"
+kind: "philsThing"
+metadata:
+  name: "example"
