@@ -4,10 +4,10 @@ import (
 	"context"
 	"runtime"
 
-	stub "github.com/philbrookes/phils-operator/pkg/stub"
 	sdk "github.com/operator-framework/operator-sdk/pkg/sdk"
 	k8sutil "github.com/operator-framework/operator-sdk/pkg/util/k8sutil"
 	sdkVersion "github.com/operator-framework/operator-sdk/version"
+	stub "github.com/philbrookes/phils-operator/pkg/stub"
 
 	"github.com/sirupsen/logrus"
 )
@@ -22,7 +22,7 @@ func main() {
 	printVersion()
 
 	resource := "app.phil.com/v1alpha1"
-	kind := "philsThing"
+	kind := "PhilsThing"
 	namespace, err := k8sutil.GetWatchNamespace()
 	if err != nil {
 		logrus.Fatalf("Failed to get watch namespace: %v", err)

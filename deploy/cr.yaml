@@ -1,4 +1,7 @@
 apiVersion: "app.phil.com/v1alpha1"
-kind: "philsThing"
+kind: "PhilsThing"
 metadata:
   name: "example"
+spec:
+  philsData: ""
+  philsCounter: ""

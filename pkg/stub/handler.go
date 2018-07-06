@@ -2,15 +2,13 @@ package stub
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/philbrookes/phils-operator/pkg/apis/app/v1alpha1"
 
 	"github.com/operator-framework/operator-sdk/pkg/sdk"
-	"github.com/sirupsen/logrus"
-	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/api/errors"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/runtime/schema"
+
+	ptv1a1 "github.com/philbrookes/phils-operator/pkg/apis/app/v1alpha1"
 )
 
 func NewHandler() sdk.Handler {
@@ -22,47 +20,43 @@ type Handler struct {
 }
 
 func (h *Handler) Handle(ctx context.Context, event sdk.Event) error {
-	switch o := event.Object.(type) {
-	case *v1alpha1.philsThing:
-		err := sdk.Create(newbusyBoxPod(o))
-		if err != nil && !errors.IsAlreadyExists(err) {
-			logrus.Errorf("Failed to create busybox pod : %v", err)
-			return err
+	switch philsThing := event.Object.(type) {
+	case *v1alpha1.PhilsThing:
+		if !event.Deleted {
+			return h.handlePhilsThing(philsThing)
 		}
 	}
 	return nil
 }
 
-// newbusyBoxPod demonstrates how to create a busybox pod
-func newbusyBoxPod(cr *v1alpha1.philsThing) *corev1.Pod {
-	labels := map[string]string{
-		"app": "busy-box",
+func (h *Handler) handlePhilsThing(philsThing *ptv1a1.PhilsThing) error {
+	philsThingCopy := philsThing.DeepCopy()
+
+	switch philsThingCopy.Spec.PhilsData {
+	case "complete":
+		fmt.Printf("process complete!\n")
+		return sdk.Delete(philsThingCopy)
+	case "provision_required":
+		fmt.Printf("on stage1, count: %v\n", philsThingCopy.Spec.PhilsCounter)
+		if len(philsThingCopy.Spec.PhilsCounter) < 10 {
+			philsThingCopy.Spec.PhilsCounter = philsThingCopy.Spec.PhilsCounter + "|"
+		} else {
+			fmt.Printf("going to stage 2\n")
+			philsThingCopy.Spec.PhilsCounter = ""
+			philsThingCopy.Spec.PhilsData = "provision_in_progress"
+		}
+	case "provision_in_progress":
+		fmt.Printf("on stage2, count: %v\n", philsThingCopy.Spec.PhilsCounter)
+		if len(philsThingCopy.Spec.PhilsCounter) < 10 {
+			philsThingCopy.Spec.PhilsCounter = philsThingCopy.Spec.PhilsCounter + "|"
+		} else {
+			fmt.Printf("going to complete\n")
+			philsThingCopy.Spec.PhilsCounter = ""
+			philsThingCopy.Spec.PhilsData = "complete"
+		}
+	default:
+		fmt.Printf("unknown data, defaulting to stage1\n")
+		philsThingCopy.Spec.PhilsData = "provision_required"
 	}
-	return &corev1.Pod{
-		TypeMeta: metav1.TypeMeta{
-			Kind:       "Pod",
-			APIVersion: "v1",
-		},
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      "busy-box",
-			Namespace: cr.Namespace,
-			OwnerReferences: []metav1.OwnerReference{
-				*metav1.NewControllerRef(cr, schema.GroupVersionKind{
-					Group:   v1alpha1.SchemeGroupVersion.Group,
-					Version: v1alpha1.SchemeGroupVersion.Version,
-					Kind:    "philsThing",
-				}),
-			},
-			Labels: labels,
-		},
-		Spec: corev1.PodSpec{
-			Containers: []corev1.Container{
-				{
-					Name:    "busybox",
-					Image:   "busybox",
-					Command: []string{"sleep", "3600"},
-				},
-			},
-		},
-	}
+	return sdk.Update(philsThingCopy)
 }

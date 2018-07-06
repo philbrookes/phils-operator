@@ -6,24 +6,25 @@ import (
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-type philsThingList struct {
+type PhilsThingList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata"`
-	Items           []philsThing `json:"items"`
+	Items           []PhilsThing `json:"items"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-type philsThing struct {
+type PhilsThing struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata"`
-	Spec              philsThingSpec   `json:"spec"`
-	Status            philsThingStatus `json:"status,omitempty"`
+	Spec              PhilsThingSpec   `json:"spec"`
+	Status            PhilsThingStatus `json:"status,omitempty"`
 }
 
-type philsThingSpec struct {
-	// Fill me
+type PhilsThingSpec struct {
+	PhilsData    string `json:"philsData"`
+	PhilsCounter string `json:"philsCounter"`
 }
-type philsThingStatus struct {
+type PhilsThingStatus struct {
 	// Fill me
 }

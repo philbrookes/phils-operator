@@ -5,9 +5,18 @@ metadata:
 spec:
   group: app.phil.com
   names:
-    kind: philsThing
-    listKind: philsThingList
+    kind: PhilsThing
+    listKind: PhilsThingList
     plural: philsthings
     singular: philsthing
   scope: Namespaced
   version: v1alpha1
+  validation:
+    openAPIV3Schema:
+      properties:
+        spec:
+          properties:
+            philsData:
+              type: string
+            philsCounter:
+              type: string
