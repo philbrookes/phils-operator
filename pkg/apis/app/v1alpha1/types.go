@@ -22,9 +22,11 @@ type PhilsThing struct {
 }
 
 type PhilsThingSpec struct {
-	PhilsData    string `json:"philsData"`
-	PhilsCounter string `json:"philsCounter"`
+	ServiceClassName    string                 `json:"service_class_name"`
+	Params              map[string]interface{} `json:"params"`
+	ServiceInstanceName string                 `json:"service_instance_name"`
 }
+
 type PhilsThingStatus struct {
-	// Fill me
+	Phase string `json:"phase"`
 }
