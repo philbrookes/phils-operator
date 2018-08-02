@@ -16,7 +16,8 @@ spec:
       properties:
         spec:
           properties:
-            philsData:
+            service_class_name:
               type: string
-            philsCounter:
-              type: string
+            params:
+              description: parameters for creating the services
+              type: object

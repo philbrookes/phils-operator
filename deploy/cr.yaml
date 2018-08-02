@@ -3,5 +3,7 @@ kind: "PhilsThing"
 metadata:
   name: "example"
 spec:
-  philsData: ""
-  philsCounter: ""
+  service_class_name: "dh-android-app-apb"
+  params:
+    appIdentifier: "org.pbrookes.android"
+    appName: "phils-app"
